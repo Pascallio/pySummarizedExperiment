@@ -2,7 +2,7 @@ import pandas as pd
 import copy
 import numpy as np
 
-class pySummarizedExperiment():
+class pySummarizedExperiment:
     def __init__(self, assays: dict = dict(), columnData: pd.DataFrame = pd.DataFrame(), 
                  rowData: pd.DataFrame = pd.DataFrame(), metadata: dict = dict(),
                  longDf: pd.DataFrame = pd.DataFrame(), rowIndex: str = None, colIndex: str = None):
@@ -14,6 +14,13 @@ class pySummarizedExperiment():
         self.__colDat = columnData
         self.__rowDat = rowData
         self.__metadat = metadata
+        
+    def toLongDataFrame(self):
+        longDf = pd.concat([x.stack().to_frame() for x in self.assays().values()], axis = 1)
+        longDf.columns = self.assays().keys()
+        longDf = pd.merge(longDf, self.rowData(), right_index=True, left_on = self.index().name)
+        longDf = pd.merge(longDf, self.colData(), right_index=True, left_on = self.colData().index.name)
+        return longDf.reset_index()
         
     def __longToExperiment(self, df, rowIndex, colIndex):
         metadata = np.unique(df[df.columns[np.where(df.nunique() == 1)]])
