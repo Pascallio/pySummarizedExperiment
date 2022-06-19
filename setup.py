@@ -7,14 +7,15 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name='pySummarizedExperiment',
-    version='0.1.2',    
+    version='0.2.0',    
     description="A Python port of R's SummarizedExperiment package",
     url='https://github.com/Pascallio/pySummarizedExperiment',
     author='Pascal Maas',
     author_email='p.maas92@gmail.com',
     license='Apache-2.0',
     install_requires=['pandas',
-                      'numpy',                     
+                      'numpy',
+                      'sklearn'  
                       ],
     long_description=long_description,
     long_description_content_type='text/markdown',
