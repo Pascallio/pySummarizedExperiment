@@ -8,38 +8,29 @@ from sklearn.decomposition import PCA
 
 class pySummarizedExperiment:
     """
-    A class for containing -omics style data without duplication
+    A class for containing -omics style data without duplication. Based on `pandas` syntax.
     
-    Methods:
-        toLongDataFrame(): Exports the pySummarizedExperiment to a single long-format DataFrame
-        bind(exp, axis = 0): Bind two pySummarizedExperiments together. axis = 0 binds rowWise, axis = 1 binds columnWise 
-        setIndex(index): Set a new rowIndex of the pySummarizedExperiment 
-        index(): Get the rowIndex of the pySummarizedExperiment
-        setColnames(names): Set new column names of the pySummarizedExperiment 
-        colnames(): Get column names of the pySummarizedExperiment 
-        assays(): Get the assayData of the pySummarizedExperiment
-        assay(i = 0): Get a specific assay, defaults to the first index of the keys
-        colData(col = None): Get all the colData, or a specific column when given
-        rowData(col = None): Get all the rowData, or a specific column when given
-        metaData(key = None): Get all the metaData, or a specific value when a key is given 
+    ## Parameters
+    Initializing the object can be done in two ways:
+    
+    1. Supply assays, colData, rowData, and optional metaData.
+    2. Supply a longDf, colIndex, rowIndex and optional metaData
+        
+    ### First option
+    assays (`dict`): A dictionary with one ore more DataFrame objects as values. Keys will be used as names for the assays
+    colData (`pd.DataFrame`): DataFrame typically used for samples / cells / patients. It is recommend to use identifiers of these as indexes of the DataFrame
+    rowData (`pd.DataFrame`): DataFrame typically used for compound / genes. It is recommend to use identifiers of these as indexes of the DataFrame 
+    metaData (`dict`): (optional) Dictionary with various values describing the experiment. Won't be altered by subsetting
+    
+    ### Second option
+    longDf (`pd.DataFrame`): DataFrame in the long-format with assays, samples & features. Can be used instead of assays, colData & rowData, but should be supplied with `colIndex` and `rowIndex`.
+    colIndex (`str`): Name of the column to be used from `longDf`. These values will be used as columns in the assay and as index in the colData.
+    rowIndex (`str`): Name of the column to be used from `longDf`. These values will be used as columns in the assay and as index in the rowData.
+    
     """
     def __init__(self, assays: dict = dict(), colData: pd.DataFrame = pd.DataFrame(), 
                  rowData: pd.DataFrame = pd.DataFrame(), metaData: dict = dict(),
                  longDf: pd.DataFrame = pd.DataFrame(), colIndex: str = None, rowIndex: str = None):
-        """
-        Initialize the object. This can be done in two ways:
-        1) Supply assays, colData, rowData, and optional metaData.
-        2) Supply a longDf, colIndex, rowIndex and optional metaData
-        
-        Parameters:
-            assays (dict): A dictionary with Pandas DataFrames as values. Keys will be used as names for the assays
-            colData (pd.DataFrame): DataFrame typically used for samples / cells / patients. It is recommend to use identifiers of these as indexes of the DataFrame 
-            rowData (pd.DataFrame): DataFrame typically used for compound / genes. It is recommend to use identifiers of these as indexes of the DataFrame 
-            metaData (dict): (optional) Dictionary with various values describing the experiment. Won't be altered by subsetting
-            longDf (pd.DataFrame): DataFrame in the long-format with assays, samples & features. Can be used instead of assays, colData & rowData, but should be supplied with `colIndex` and `rowIndex`.
-            colIndex (str): Name of the column to be used from `longDf`. These values will be used as columns in the assay and as index in the colData.
-            rowIndex (str): Name of the column to be used from `longDf`. These values will be used as columns in the assay and as index in the rowData.
-        """
 
         if len(longDf.index) > 0:
             longDf = longDf[longDf.columns[np.where(longDf.nunique() > 1)]]
